@@ -18,7 +18,9 @@ class AppConfig(BaseSettings):
     allowed_origins: List[AnyUrl] = ["http://localhost:5173"]
 
     # postgresql+asyncpg://<db_username>:<db_secret>@<db_host>:<db_port>/<db_name>
-    postgres_database_uri: PostgresDsn = "postgresql+asyncpg://silo_db_user:silo@localhost:5432/silo"
+    postgres_database_uri: PostgresDsn = (
+        "postgresql+asyncpg://silo_db_user:silo@localhost:5432/silo"
+    )
 
     # logging
     log_level: str = Field(default="INFO")
@@ -30,8 +32,8 @@ class AppConfig(BaseSettings):
     ldap_user_dn_template: str
     ldap_use_ssl: bool = True
     ldap_ssl_skip_verify: bool = False
-    #ldap_bind_dn: str
-    #ldap_bin_pw: str
+    # ldap_bind_dn: str
+    # ldap_bin_pw: str
 
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 7

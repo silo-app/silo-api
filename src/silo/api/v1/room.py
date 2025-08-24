@@ -9,6 +9,7 @@ from silo.schemas import RoomBase, RoomCreate, RoomRead
 
 room_router = APIRouter(tags=["Room"])
 
+
 @room_router.get(
     "/room/",
     summary="Get all Rooms",
@@ -19,14 +20,16 @@ room_router = APIRouter(tags=["Room"])
     summary="Get a specific Room",
     response_model=RoomRead,
 )
-async def get_rooms(session: AsyncSession = Depends(async_get_db), id: int | None = None) -> RoomRead | list[RoomRead]:
+async def get_rooms(
+    session: AsyncSession = Depends(async_get_db), id: int | None = None
+) -> RoomRead | list[RoomRead]:
     if id is not None:
         result = await session.scalars(select(models.Room).where(models.Room.id == id))
         room = result.one_or_none()
 
         if room is not None:
             return RoomRead.model_validate(room, from_attributes=True)
-        
+
         raise HTTPException(status_code=404, detail=f"Room {id} not found")
 
     result = await session.scalars(select(models.Room))
@@ -41,18 +44,23 @@ async def get_rooms(session: AsyncSession = Depends(async_get_db), id: int | Non
     response_model=RoomRead,
     status_code=201,
 )
-async def new_room(room: RoomCreate, session: AsyncSession = Depends(async_get_db)) -> RoomRead:
+async def new_room(
+    room: RoomCreate, session: AsyncSession = Depends(async_get_db)
+) -> RoomRead:
     new_room = models.Room(**room.model_dump())
     session.add(new_room)
     await session.commit()
     return new_room
+
 
 @room_router.put(
     "/room/{id}",
     summary="Update an existing Room",
     status_code=204,
 )
-async def update_room(id: int, room_update: RoomCreate, session: AsyncSession = Depends(async_get_db)):
+async def update_room(
+    id: int, room_update: RoomCreate, session: AsyncSession = Depends(async_get_db)
+):
     result = await session.scalars(select(models.Room).where(models.Room.id == id))
     room = result.one_or_none()
     if room is None:

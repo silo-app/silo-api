@@ -19,7 +19,7 @@ class CustomFormatter(Formatter):
         INFO: grey + format + reset,
         WARNING: yellow + format + reset,
         ERROR: red + format + reset,
-        CRITICAL: bold_red + format + reset
+        CRITICAL: bold_red + format + reset,
     }
 
     def format(self, record):
@@ -27,16 +27,13 @@ class CustomFormatter(Formatter):
         formatter = Formatter(log_fmt)
         return formatter.format(record)
 
+
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "default": {
-            "format": "[%(levelname)s] (%(module)s) %(asctime)s - %(message)s"
-        },
-        "stdout_formatter": {
-            "()": CustomFormatter
-        },
+        "default": {"format": "[%(levelname)s] (%(module)s) %(asctime)s - %(message)s"},
+        "stdout_formatter": {"()": CustomFormatter},
     },
     "handlers": {
         "stdout": {
@@ -70,4 +67,3 @@ except ValueError as e:
     exit(1)
 
 logger = getLogger("silo")
-

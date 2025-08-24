@@ -22,7 +22,7 @@ class ItemTypeCreate(ItemTypeBase):
 class ItemTypeRead(ItemTypeBase, TimestampSchema):
 
     id: int = Field()
-    
+
     class Config:
         json_schema_extra = {
             "example": {

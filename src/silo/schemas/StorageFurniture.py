@@ -24,7 +24,7 @@ class StorageFurnitureCreate(StorageFurnitureBase):
 class StorageFurnitureRead(StorageFurnitureBase, TimestampSchema):
 
     id: int = Field()
-    
+
     class Config:
         json_schema_extra = {
             "example": {

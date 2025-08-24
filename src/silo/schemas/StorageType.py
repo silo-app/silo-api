@@ -20,7 +20,7 @@ class StorageTypeCreate(StorageTypeBase):
 class StorageTypeRead(StorageTypeBase, TimestampSchema):
 
     id: int = Field()
-    
+
     class Config:
         json_schema_extra = {
             "example": {

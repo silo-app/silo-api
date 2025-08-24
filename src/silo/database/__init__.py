@@ -11,8 +11,12 @@ from silo import config
 
 connection_string = f"{config.postgres_database_uri}"
 
-async_engine = create_async_engine(str(config.postgres_database_uri), echo=False, future=True)
-local_session = async_sessionmaker(bind=async_engine, class_=AsyncSession, expire_on_commit=False)
+async_engine = create_async_engine(
+    str(config.postgres_database_uri), echo=False, future=True
+)
+local_session = async_sessionmaker(
+    bind=async_engine, class_=AsyncSession, expire_on_commit=False
+)
 
 
 async def async_get_db() -> AsyncGenerator[AsyncSession, None]:

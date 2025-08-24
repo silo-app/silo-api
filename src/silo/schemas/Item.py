@@ -39,7 +39,7 @@ class ItemRead(ItemBase, TimestampSchema):
 
     id: int = Field()
     silo_id: str = Field()
-    
+
     class Config:
         json_schema_extra = {
             "example": {

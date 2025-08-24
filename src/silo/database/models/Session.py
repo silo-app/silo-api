@@ -3,6 +3,7 @@ from pydantic import Field
 
 from silo.models import Base
 
+
 class Session(Base):
     user_id: str
     session_token: str

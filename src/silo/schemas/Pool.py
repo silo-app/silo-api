@@ -22,7 +22,7 @@ class PoolCreate(PoolBase):
 class PoolRead(PoolBase, TimestampSchema):
 
     id: int = Field()
-    
+
     class Config:
         json_schema_extra = {
             "example": {

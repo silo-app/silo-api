@@ -4,10 +4,9 @@ from pydantic import BaseModel, Field
 
 class RoomBase(BaseModel):
 
-    
     name: str = Field()
     description: str = Field()
-    
+
 
 class RoomCreate(RoomBase):
 

@@ -5,6 +5,7 @@ from silo.schemas import Version
 
 version_router = APIRouter(tags=["version"])
 
+
 @version_router.get(
     "/version",
     response_description="Get application version",

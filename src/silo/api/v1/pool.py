@@ -9,6 +9,7 @@ from silo.schemas import PoolBase, PoolCreate, PoolRead
 
 pool_router = APIRouter(tags=["Pool"])
 
+
 @pool_router.get(
     "/pool/",
     summary="Get all Pools",
@@ -19,14 +20,16 @@ pool_router = APIRouter(tags=["Pool"])
     summary="Get a specific Pool",
     response_model=PoolRead,
 )
-async def get_pools(session: AsyncSession = Depends(async_get_db), id: int | None = None) -> PoolRead | list[PoolRead]:
+async def get_pools(
+    session: AsyncSession = Depends(async_get_db), id: int | None = None
+) -> PoolRead | list[PoolRead]:
     if id is not None:
         result = await session.scalars(select(models.Pool).where(models.Pool.id == id))
         pool = result.one_or_none()
 
         if pool is not None:
             return PoolRead.model_validate(pool, from_attributes=True)
-        
+
         raise HTTPException(status_code=404, detail=f"Pool {id} not found")
 
     result = await session.scalars(select(models.Pool))
@@ -41,18 +44,23 @@ async def get_pools(session: AsyncSession = Depends(async_get_db), id: int | Non
     response_model=PoolRead,
     status_code=201,
 )
-async def new_pool(pool: PoolCreate, session: AsyncSession = Depends(async_get_db)) -> PoolRead:
+async def new_pool(
+    pool: PoolCreate, session: AsyncSession = Depends(async_get_db)
+) -> PoolRead:
     new_pool = models.Pool(**pool.model_dump())
     session.add(new_pool)
     await session.commit()
     return new_pool
+
 
 @pool_router.put(
     "/pool/{id}",
     summary="Update an existing Pool",
     status_code=204,
 )
-async def update_pool(id: int, pool_update: PoolCreate, session: AsyncSession = Depends(async_get_db)):
+async def update_pool(
+    id: int, pool_update: PoolCreate, session: AsyncSession = Depends(async_get_db)
+):
     result = await session.scalars(select(models.Pool).where(models.Pool.id == id))
     pool = result.one_or_none()
     if pool is None:

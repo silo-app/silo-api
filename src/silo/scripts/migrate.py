@@ -4,7 +4,7 @@ import logging
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from silo import config
-from silo.database import BaseDatabaseObject 
+from silo.database import BaseDatabaseObject
 
 logger = logging.getLogger()
 

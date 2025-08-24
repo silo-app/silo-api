@@ -4,9 +4,14 @@ from sqlalchemy import select
 
 from silo.database import async_get_db
 from silo.database import models
-from silo.schemas import StorageFurnitureBase, StorageFurnitureCreate, StorageFurnitureRead
+from silo.schemas import (
+    StorageFurnitureBase,
+    StorageFurnitureCreate,
+    StorageFurnitureRead,
+)
 
 storage_furniture_router = APIRouter(tags=["StorageFurniture"])
+
 
 @storage_furniture_router.get(
     "/storagefurniture/",
@@ -18,21 +23,28 @@ storage_furniture_router = APIRouter(tags=["StorageFurniture"])
     summary="Get a specific StorageFurniture",
     response_model=StorageFurnitureRead,
 )
-async def get_storage_furnitures(session: AsyncSession = Depends(async_get_db), id: int | None = None) -> StorageFurnitureRead | list[StorageFurnitureRead]:
+async def get_storage_furnitures(
+    session: AsyncSession = Depends(async_get_db), id: int | None = None
+) -> StorageFurnitureRead | list[StorageFurnitureRead]:
     if id is not None:
-        result = await session.scalars(select(models.StorageFurniture).where(models.StorageFurniture.id == id))
+        result = await session.scalars(
+            select(models.StorageFurniture).where(models.StorageFurniture.id == id)
+        )
         storage_furniture = result.one_or_none()
 
         if storage_furniture is not None:
             return StorageFurnitureRead.model_validate(storage_furniture)
-        
+
         raise HTTPException(status_code=404, detail=f"StorageFurniture {id} not found")
 
     result = await session.scalars(select(models.StorageFurniture))
     storage_furnitures = result.all()
 
-    return [StorageFurnitureRead.model_validate(storage_furniture, from_attributes=True) for storage_furniture in storage_furnitures]
-        
+    return [
+        StorageFurnitureRead.model_validate(storage_furniture, from_attributes=True)
+        for storage_furniture in storage_furnitures
+    ]
+
 
 @storage_furniture_router.post(
     "/storagefurniture/",
@@ -40,19 +52,29 @@ async def get_storage_furnitures(session: AsyncSession = Depends(async_get_db), 
     response_model=StorageFurnitureRead,
     status_code=201,
 )
-async def new_storage_furniture(storage_furniture: StorageFurnitureCreate, session: AsyncSession = Depends(async_get_db)) -> StorageFurnitureRead:
+async def new_storage_furniture(
+    storage_furniture: StorageFurnitureCreate,
+    session: AsyncSession = Depends(async_get_db),
+) -> StorageFurnitureRead:
     new_storage_furniture = models.StorageFurniture(**storage_furniture.model_dump())
     session.add(new_storage_furniture)
     await session.commit()
     return new_storage_furniture
+
 
 @storage_furniture_router.put(
     "/storagefurniture/{id}",
     summary="Update an existing StorageFurniture",
     status_code=204,
 )
-async def update_storage_furniture(id: int, storage_furniture_update: StorageFurnitureCreate, session: AsyncSession = Depends(async_get_db)):
-    result = await session.scalars(select(models.StorageFurniture).where(models.StorageFurniture.id == id))
+async def update_storage_furniture(
+    id: int,
+    storage_furniture_update: StorageFurnitureCreate,
+    session: AsyncSession = Depends(async_get_db),
+):
+    result = await session.scalars(
+        select(models.StorageFurniture).where(models.StorageFurniture.id == id)
+    )
     storage_furniture = result.first()
     if storage_furniture is None:
         raise HTTPException(404, detail="StorageFurniture not found")
@@ -69,8 +91,12 @@ async def update_storage_furniture(id: int, storage_furniture_update: StorageFur
     summary="Delete a StorageFurniture",
     status_code=204,
 )
-async def delete_storage_furniture(id: int, session: AsyncSession = Depends(async_get_db)):
-    result = await session.scalars(select(models.StorageFurniture).where(models.StorageFurniture.id == id))
+async def delete_storage_furniture(
+    id: int, session: AsyncSession = Depends(async_get_db)
+):
+    result = await session.scalars(
+        select(models.StorageFurniture).where(models.StorageFurniture.id == id)
+    )
     storage_furniture = result.first()
     if storage_furniture is None:
         raise HTTPException(404, detail="StorageFurniture not found")
