@@ -7,7 +7,6 @@ from silo.schemas import Token
 
 # from silo.auth.ldap import LDAP
 from silo import config
-from silo.security.token import create_access_token, create_refresh_token
 
 login_router = APIRouter(tags=["login"])
 logout_router = APIRouter(tags=["logout"])
