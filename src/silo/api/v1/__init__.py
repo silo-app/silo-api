@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from .version import version_router
 from .auth import login_router, logout_router
+from .error_response import ErrorResponse
 
 from .item import items_router
 from .room import room_router

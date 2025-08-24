@@ -1,9 +1,12 @@
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from pydantic import ValidationError
 
 from silo.database import async_get_db
 from silo.database import models
+from silo.api.v1 import ErrorResponse
 from silo.schemas import (
     StorageFurnitureBase,
     StorageFurnitureCreate,
@@ -51,14 +54,25 @@ async def get_storage_furnitures(
     summary="Add a new StorageFurniture",
     response_model=StorageFurnitureRead,
     status_code=201,
+    responses={
+        409: {"model": ErrorResponse, "description": "Unique constraint violation"}
+    },
 )
 async def new_storage_furniture(
     storage_furniture: StorageFurnitureCreate,
     session: AsyncSession = Depends(async_get_db),
 ) -> StorageFurnitureRead:
     new_storage_furniture = models.StorageFurniture(**storage_furniture.model_dump())
-    session.add(new_storage_furniture)
-    await session.commit()
+    try:
+        session.add(new_storage_furniture)
+        await session.commit()
+    except IntegrityError:
+        session.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="This combination of name, room and type might already exists!",
+        )
+
     return new_storage_furniture
 
 
