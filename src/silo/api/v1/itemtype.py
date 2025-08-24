@@ -74,7 +74,7 @@ async def delete_item_type(id: int, session: AsyncSession = Depends(async_get_db
     result = await session.scalars(select(models.ItemType).where(models.ItemType.id == id))
     item_type = result.first()
     if item_type is None:
-        raise HTTPException(404, detail="Item not found")
+        raise HTTPException(404, detail="ItemType not found")
 
     await session.delete(item_type)
     await session.commit()
