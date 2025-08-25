@@ -3,11 +3,12 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select
 
+from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
 from silo.schemas import ItemBase, ItemCreate, ItemRead
 
-items_router = APIRouter(tags=["Item"])
+items_router = APIRouter(tags=["Item"], dependencies=[Depends(require_permission())])
 
 
 @items_router.get(
@@ -19,6 +20,7 @@ items_router = APIRouter(tags=["Item"])
     "/item/{id}",
     summary="Get a specific Item",
     response_model=ItemRead,
+    responses={403: {"description": "Forbidden – missing required permissions"}},
 )
 async def get_items(
     session: AsyncSession = Depends(async_get_db), id: int | None = None

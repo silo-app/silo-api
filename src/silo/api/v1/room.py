@@ -3,11 +3,12 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
 from silo.schemas import RoomBase, RoomCreate, RoomRead
 
-room_router = APIRouter(tags=["Room"])
+room_router = APIRouter(tags=["Room"], dependencies=[Depends(require_permission())])
 
 
 @room_router.get(

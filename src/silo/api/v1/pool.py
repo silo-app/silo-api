@@ -3,11 +3,12 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
 from silo.schemas import PoolBase, PoolCreate, PoolRead
 
-pool_router = APIRouter(tags=["Pool"])
+pool_router = APIRouter(tags=["Pool"], dependencies=[Depends(require_permission())])
 
 
 @pool_router.get(
@@ -35,7 +36,7 @@ async def get_pools(
     result = await session.scalars(select(models.Pool))
     pools = result.all()
 
-    return [PoolRead.model_validate(room, from_attributes=True) for room in pools]
+    return [PoolRead.model_validate(pool, from_attributes=True) for pool in pools]
 
 
 @pool_router.post(

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 
-class ErrorResponse(BaseModel):
+class Response(BaseModel):
     detail: str

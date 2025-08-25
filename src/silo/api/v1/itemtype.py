@@ -3,11 +3,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
 from silo.schemas import ItemTypeBase, ItemTypeCreate, ItemTypeRead
 
-item_type_router = APIRouter(tags=["ItemType"])
+item_type_router = APIRouter(
+    tags=["ItemType"], dependencies=[Depends(require_permission())]
+)
 
 
 @item_type_router.get(

@@ -1,6 +1,5 @@
 from pydantic_settings import BaseSettings
 from pydantic import AnyUrl, Field, SecretStr, PostgresDsn
-from typing import List
 from pathlib import Path
 
 THIS_PARENT_DIR = Path(__file__).parent.resolve()
@@ -15,7 +14,13 @@ class AppConfig(BaseSettings):
     debug_mode: bool = False
     dev_mode: bool = False
 
-    allowed_origins: List[AnyUrl] = ["http://localhost:5173"]
+    allowed_origins: list[AnyUrl] = ["http://localhost:5173"]
+    allowed_paths_without_auth: list[str] = [
+        "/openapi.json",
+        "/docs",
+        "/version",
+        "/auth/token",
+    ]
 
     # postgresql+asyncpg://<db_username>:<db_secret>@<db_host>:<db_port>/<db_name>
     postgres_database_uri: PostgresDsn = (
@@ -32,8 +37,8 @@ class AppConfig(BaseSettings):
     ldap_user_dn_template: str
     ldap_use_ssl: bool = True
     ldap_ssl_skip_verify: bool = False
-    # ldap_bind_dn: str
-    # ldap_bin_pw: str
+    ldap_bind_dn: str | None = None
+    ldap_bin_pw: str | None = None
 
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 7
