@@ -1,22 +1,63 @@
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request
 import fnmatch
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+
+from sqlalchemy import select
+from sqlalchemy.exc import MultipleResultsFound
 from silo.api import router
 from silo import config
-from silo.api.dependencies import get_current_user, require_permission
 from silo.log import logger
-from starlette.middleware.base import BaseHTTPMiddleware
 
-
-from silo.database import async_engine
-from silo.database.models import Base
+from silo.database import async_engine, async_get_db
+from silo.database.models import Base, Role, User
 from silo.security.jwt import verify_token
 
 
+async def add_default_role() -> None:
+    async for db in async_get_db():
+        # user role
+        result = await db.execute(select(Role).filter_by(name="user"))
+        user_role = result.scalar_one_or_none()
+        if user_role is None:
+            db.add(Role(name="user", permissions={"/user/myinfo": ["GET"]}))
+            await db.commit()
+            print("[SILO] Added default role 'user'")
+        # admin role
+        result = await db.execute(select(Role).filter_by(name="admin"))
+        admin_role = result.scalar_one_or_none()
+        if admin_role is None:
+            db.add(
+                Role(name="admin", permissions={"*": ["GET", "POST", "PUT", "DELETE"]})
+            )
+            await db.commit()
+            print("[SILO] Added default role 'admin'")
+
+
 async def add_admin_user() -> None:
-    pass
+    async for db in async_get_db():
+        result = await db.execute(
+            select(User).where(User.roles.any(Role.name == "admin"))
+        )
+        try:
+            admin_user = result.scalar_one_or_none()
+            if admin_user is None:
+                if config.first_admin_user is None:
+                    raise RuntimeError(
+                        "[SILO] Error: Cannot startup SILO. Define a first admin user with config.first_admin_user"
+                    )
+                new_user = User(username=config.first_admin_user)
+                resultr = await db.execute(select(Role).where(Role.name == "admin"))
+                admin_role = resultr.scalar_one_or_none()
+
+                new_user.roles.append(admin_role)
+                db.add(new_user)
+                await db.commit()
+
+                print(f"[SILO] Added default admin user '{config.first_admin_user}'")
+        except MultipleResultsFound:
+            pass
 
 
 async def create_tables() -> None:
@@ -29,6 +70,9 @@ async def db_lifespan(app: FastAPI):
 
     # create database tables
     await create_tables()
+
+    # Adding default roles
+    await add_default_role()
 
     # initialize admin user
     await add_admin_user()

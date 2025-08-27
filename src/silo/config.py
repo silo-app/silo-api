@@ -45,5 +45,7 @@ class AppConfig(BaseSettings):
     jwt_algorithm: str = "HS256"
     secret_key: SecretStr
 
+    first_admin_user: str | None = None
+
 
 config = AppConfig()

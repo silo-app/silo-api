@@ -14,7 +14,11 @@ class RoleCreate(RoleBase):
         json_schema_extra = {
             "example": {
                 "name": "user",
-                "permissions": {},
+                "permissions": {
+                    "/item/*": ["GET"],
+                    "/role/*": ["GET"],
+                    "/pool/*": ["GET", "POST"],
+                },
             }
         }
 
@@ -28,6 +32,10 @@ class RoleRead(RoleBase, TimestampSchema):
             "example": {
                 "id": 2,
                 "name": "user",
-                "permissions": {},
+                "permissions": {
+                    "/item/*": ["GET"],
+                    "/role/*": ["GET"],
+                    "/,pool/*": ["GET", "POST"],
+                },
             }
         }
