@@ -1,6 +1,6 @@
 [project]
-name = "backend"
-version = "0.1.0"
+name = "silo-api"
+version = "0.1.0a1"
 description = "System for Inventory and Logistics Optimization"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -17,5 +17,10 @@ dependencies = [
     "uvicorn>=0.35.0",
 ]
 
+[build-system]
+requires = ["setuptools"]
+
 [dependency-groups]
-dev = []
+dev = [
+    "black>=25.1.0",
+]

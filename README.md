@@ -51,7 +51,10 @@ You can access the API documentation on `/docs`.
 ## Development instance
 
 ```
-git clone https://github.com/silo-app/backend.git
+$ git clone https://github.com/silo-app/backend.git
+$ cd backend/
+$ uv sync
+$ uv run --env-file .env python3 -m uvicorn main:app --reload --app-dir src/silo
 ```
 
 ## License
