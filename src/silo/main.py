@@ -45,7 +45,7 @@ async def add_admin_user() -> None:
             if admin_user is None:
                 if config.first_admin_user is None:
                     raise RuntimeError(
-                        "[SILO] Error: Cannot startup SILO. Define a first admin user with config.first_admin_user"
+                        "[SILO] Error: Cannot startup SILO. Define a first admin user with the environment variable FIRST_ADMIN_USER"
                     )
                 new_user = User(username=config.first_admin_user)
                 resultr = await db.execute(select(Role).where(Role.name == "admin"))
@@ -77,7 +77,7 @@ async def db_lifespan(app: FastAPI):
     # initialize admin user
     await add_admin_user()
 
-    logger.info("Started SILO application")
+    logger.info("[SILO] Application startup complete")
 
     yield
 
@@ -86,6 +86,15 @@ app: FastAPI = FastAPI(
     title="SILO API",
     lifespan=db_lifespan,
     version=config.api_version,
+    contact={
+        "name": "Marcel-Brian Wilkowsky",
+        "url": "https://mawidev.de",
+        "email": "kontakt@marcelwilkowsky.de",
+    },
+    license_info={
+        "name": "MIT license",
+        "url": "https://opensource.org/licenses/MIT",
+    },
     swagger_ui_parameters={
         "syntaxHighlight": {"theme": "obsidian"},
         "docExpansion": "none",
