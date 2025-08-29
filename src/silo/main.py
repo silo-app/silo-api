@@ -1,68 +1,19 @@
+import pathlib
 from fastapi import FastAPI, HTTPException, Request
+
 import fnmatch
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from sqlalchemy import select
-from sqlalchemy.exc import MultipleResultsFound
+from fastapi.staticfiles import StaticFiles
 from silo.api import router
 from silo import config
 from silo.log import logger
 
-from silo.database import async_engine, async_get_db
-from silo.database.models import Base, Role, User
+
 from silo.security.jwt import verify_token
-
-
-async def add_default_role() -> None:
-    async for db in async_get_db():
-        # user role
-        result = await db.execute(select(Role).filter_by(name="user"))
-        user_role = result.scalar_one_or_none()
-        if user_role is None:
-            db.add(Role(name="user", permissions={"/user/myinfo": ["GET"]}))
-            await db.commit()
-            print("[SILO] Added default role 'user'")
-        # admin role
-        result = await db.execute(select(Role).filter_by(name="admin"))
-        admin_role = result.scalar_one_or_none()
-        if admin_role is None:
-            db.add(
-                Role(name="admin", permissions={"*": ["GET", "POST", "PUT", "DELETE"]})
-            )
-            await db.commit()
-            print("[SILO] Added default role 'admin'")
-
-
-async def add_admin_user() -> None:
-    async for db in async_get_db():
-        result = await db.execute(
-            select(User).where(User.roles.any(Role.name == "admin"))
-        )
-        try:
-            admin_user = result.scalar_one_or_none()
-            if admin_user is None:
-                if config.first_admin_user is None:
-                    raise RuntimeError(
-                        "[SILO] Error: Cannot startup SILO. Define a first admin user with the environment variable FIRST_ADMIN_USER"
-                    )
-                new_user = User(username=config.first_admin_user)
-                resultr = await db.execute(select(Role).where(Role.name == "admin"))
-                admin_role = resultr.scalar_one_or_none()
-
-                new_user.roles.append(admin_role)
-                db.add(new_user)
-                await db.commit()
-
-                print(f"[SILO] Added default admin user '{config.first_admin_user}'")
-        except MultipleResultsFound:
-            pass
-
-
-async def create_tables() -> None:
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+from silo.startup import create_tables, add_default_roles, add_default_admin
 
 
 @asynccontextmanager
@@ -72,10 +23,10 @@ async def db_lifespan(app: FastAPI):
     await create_tables()
 
     # Adding default roles
-    await add_default_role()
+    await add_default_roles()
 
     # initialize admin user
-    await add_admin_user()
+    await add_default_admin()
 
     logger.info("[SILO] Application startup complete")
 
@@ -88,7 +39,7 @@ app: FastAPI = FastAPI(
     version=config.api_version,
     contact={
         "name": "Marcel-Brian Wilkowsky",
-        "url": "https://mawidev.de",
+        "url": "https://silo.mawidev.de",
         "email": "kontakt@marcelwilkowsky.de",
     },
     license_info={
@@ -98,6 +49,8 @@ app: FastAPI = FastAPI(
     swagger_ui_parameters={
         "syntaxHighlight": {"theme": "obsidian"},
         "docExpansion": "none",
+        "displayRequestDuration": True,
+        "filter": True,
     },
     responses={
         401: {
@@ -114,6 +67,9 @@ app: FastAPI = FastAPI(
 app.include_router(router)
 
 API_PREFIX = f"{router.prefix}/{config.api_version}"
+
+static_path = pathlib.Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 
 # application middleware
