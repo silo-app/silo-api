@@ -1,4 +1,5 @@
-from ldap3 import Connection, Server, ALL
+from ssl import CERT_NONE
+from ldap3 import Connection, Server, Tls, ALL
 from ldap3.utils.conv import escape_filter_chars
 from ldap3.core.exceptions import LDAPInvalidCredentialsResult
 
@@ -28,9 +29,14 @@ class LDAPAuthenticator(BaseAuthenticator):
         self.use_ssl = use_ssl
         self.ssl_skip_verify = ssl_skip_verify
 
+        tls = None
+        if self.ssl_skip_verify is True:
+            tls = Tls(validate=CERT_NONE)
+
         self.server = Server(
             self.server_uri,
             use_ssl=self.use_ssl,
+            tls=tls,
             get_info=ALL,
         )
 
