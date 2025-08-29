@@ -1,7 +1,7 @@
 WARNING: THIS PACKAGE IS CURRENTLY UNDER DEVELOPMENT
 
-![SILO Logo](./src/silo/static/images/SILO_logo_API-dark.png#gh-dark-mode-only)
-![SILO Logo](./src/silo/static/images/SILO_logo_API.png#gh-light-mode-only)
+![SILO Logo](./src/silo/static/images/SILO_logo_API.png#gh-dark-mode-only)
+![SILO Logo](./src/silo/static/images/SILO_logo_API-dark.png#gh-light-mode-only)
 
 SILO is a warehouse software for monitoring parts and stocks of all kinds.
 
