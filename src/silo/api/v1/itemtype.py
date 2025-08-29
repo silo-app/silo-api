@@ -1,12 +1,11 @@
 from fastapi import Depends, APIRouter, HTTPException
-from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
-from silo.schemas import ItemTypeBase, ItemTypeCreate, ItemTypeRead
+from silo.schemas import ItemTypeCreate, ItemTypeRead
 
 item_type_router = APIRouter(
     tags=["ItemType"], dependencies=[Depends(require_permission())]

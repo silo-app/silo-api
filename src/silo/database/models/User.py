@@ -2,8 +2,12 @@ from sqlalchemy import Boolean, Integer, String
 from silo.database.models import Base
 from silo.database.models.Base import TimestampMixin
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import TYPE_CHECKING
 
 from silo.database.models.UserRole import user_roles_association
+
+if TYPE_CHECKING:
+    from silo.database.models import Role
 
 
 class User(Base, TimestampMixin):

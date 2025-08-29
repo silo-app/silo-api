@@ -24,3 +24,6 @@ requires = ["setuptools"]
 dev = [
     "black>=25.1.0",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]

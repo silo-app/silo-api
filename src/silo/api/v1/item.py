@@ -1,12 +1,11 @@
 from fastapi import Depends, APIRouter, HTTPException
-from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select
 
 from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
-from silo.schemas import ItemBase, ItemCreate, ItemRead
+from silo.schemas import ItemCreate, ItemRead
 
 items_router = APIRouter(tags=["Item"], dependencies=[Depends(require_permission())])
 
@@ -49,7 +48,6 @@ async def get_items(
 async def new_item(
     item: ItemCreate, session: AsyncSession = Depends(async_get_db)
 ) -> ItemRead:
-
     # no need to check if None, pydantic does validation
     type_id = item.type_id
     pool_id = item.pool_id

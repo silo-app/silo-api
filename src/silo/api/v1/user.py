@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from silo.database import async_get_db
 from silo.database import models
-from silo.schemas import Response, UserBase, UserCreate, UserRead
+from silo.schemas import Response, UserCreate, UserRead
 from silo.api.dependencies import get_current_user, require_permission
 
 user_router = APIRouter(tags=["User"], dependencies=[Depends(require_permission())])

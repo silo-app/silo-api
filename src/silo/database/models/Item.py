@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint
 from silo.database.models import Base
 from silo.database.models.Base import TimestampMixin
 from sqlalchemy.orm import Mapped, mapped_column

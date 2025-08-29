@@ -8,7 +8,6 @@ from silo.security.authenticator.exceptions import InvalidCredentialsError
 
 
 class LDAPAuthenticator(BaseAuthenticator):
-
     def __init__(
         self,
         server_uri: str,
@@ -41,12 +40,11 @@ class LDAPAuthenticator(BaseAuthenticator):
         )
 
     def authenticate(self, username: str, password: str) -> bool:
-
         escaped_username = escape_filter_chars(username, "utf-8")
         user_dn = self.user_dn_template.format(username=escaped_username)
 
         try:
-            server_conn = Connection(
+            Connection(
                 self.server,
                 user=user_dn,
                 password=password,

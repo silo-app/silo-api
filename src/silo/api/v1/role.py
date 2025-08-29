@@ -1,5 +1,4 @@
 from fastapi import Depends, APIRouter, HTTPException
-from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -7,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
-from silo.schemas import Response, RoleBase, RoleCreate, RoleRead
+from silo.schemas import Response, RoleCreate, RoleRead
 
 role_router = APIRouter(tags=["Role"], dependencies=[Depends(require_permission())])
 

@@ -1,6 +1,6 @@
 from silo.database.models import Base
 from silo.database.models.Base import TimestampMixin
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class Room(Base, TimestampMixin):

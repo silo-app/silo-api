@@ -48,7 +48,7 @@ async def access_token(
         await session.commit()
         await session.refresh(user)
 
-    if user.is_active == False:
+    if not user.is_active:
         raise HTTPException(status_code=403, detail="User is inactive")
 
     access_token = create_access_token(sub=str(user.id))
