@@ -14,10 +14,15 @@ from silo.log import logger
 
 from silo.security.jwt import verify_token
 from silo.startup import create_tables, add_default_roles, add_default_admin
+from silo.security.authenticator_factory import create_authenticator
 
 
 @asynccontextmanager
 async def db_lifespan(app: FastAPI):
+
+    # check authentication class configuration
+    create_authenticator()
+    # by calling create_authenticator an instance will be created and if the class is misconfigured a TypeError will be thrown
 
     # create database tables
     await create_tables()
