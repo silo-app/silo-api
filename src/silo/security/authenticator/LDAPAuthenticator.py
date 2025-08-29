@@ -57,3 +57,6 @@ class LDAPAuthenticator(BaseAuthenticator):
             raise InvalidCredentialsError()
 
         return True
+
+    def get_fullname(self):
+        return "Max Mustermann"
