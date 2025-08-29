@@ -1,7 +1,11 @@
 WARNING: THIS PACKAGE IS CURRENTLY UNDER DEVELOPMENT
 
-![SILO Logo](./src/silo/static/images/SILO_logo_API.png#gh-dark-mode-only)
-![SILO Logo](./src/silo/static/images/SILO_logo_API-dark.png#gh-light-mode-only)
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./src/silo/static/images/SILO_logo_API.png">
+    <img alt="Shows an illustrated sun in light color mode and a moon with stars in dark color mode." src="./src/silo/static/images/SILO_logo_API-dark.png">
+  </picture>
+</p>
 
 SILO is a warehouse software for monitoring parts and stocks of all kinds.
 
