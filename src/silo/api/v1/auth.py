@@ -5,25 +5,38 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from silo.database import async_get_db, models
 from silo.schemas import Token
-from silo import config
 from silo.security.jwt import create_access_token
-from silo.security.ldap import ldap_authenticate
+from silo.security.authenticator_factory import create_authenticator
+from silo.security.authenticator.exceptions import (
+    InvalidCredentialsError,
+    AuthenticationError,
+)
+
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@auth_router.post("/token")
-async def login(
+@auth_router.post(
+    "/token",
+    description="Get an access token using OAuth2 password flow",
+    summary="Get an access token",
+)
+async def access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: AsyncSession = Depends(async_get_db),
 ) -> Token:
     username = form_data.username
     password = form_data.password
 
-    ldap_auth = ldap_authenticate(username, password)
-    if ldap_auth is False:
-        # TODO: RAISE PARENT EXC? Invalid creds? LDAP server not responding?
-        raise HTTPException(status_code=401, detail="Invalid LDAP credentials")
+    authenticator = create_authenticator()
+    try:
+        authenticate = authenticator.authenticate(username, password)
+        if authenticate is False:
+            raise InvalidCredentialsError()
+    except InvalidCredentialsError:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    except AuthenticationError:
+        raise HTTPException(status_code=401, detail="Error authenticating user")
 
     result = await session.scalars(
         select(models.User).where(models.User.username == username)

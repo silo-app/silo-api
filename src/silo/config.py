@@ -1,6 +1,9 @@
 from pydantic_settings import BaseSettings
 from pydantic import AnyUrl, Field, SecretStr, PostgresDsn
 from pathlib import Path
+from typing import Type
+
+from silo.security.authenticator import LDAPAuthenticator
 
 THIS_PARENT_DIR = Path(__file__).parent.resolve()
 
@@ -17,7 +20,10 @@ class AppConfig(BaseSettings):
     allowed_origins: list[AnyUrl] = ["http://localhost:5173"]
     allowed_paths_without_auth: list[str] = [
         "/openapi.json",
+        "/redoc",
         "/docs",
+        "/static/favicon.png",
+        "/static/logo.png",
         "/version",
         "/auth/token",
     ]
@@ -32,13 +38,17 @@ class AppConfig(BaseSettings):
     log_directory: str = Field(default=f"{THIS_PARENT_DIR}/log/logs")
 
     # authentication / authorization
+
+    authenticator_class: Type = LDAPAuthenticator
+
     ldap_server_uri: str
     ldap_base_dn: str
     ldap_user_dn_template: str
     ldap_use_ssl: bool = True
     ldap_ssl_skip_verify: bool = False
     ldap_bind_dn: str | None = None
-    ldap_bin_pw: str | None = None
+    ldap_bind_pw: str | None = None
+    ldap_allowed_groups: list[str] | None = None
 
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 7
