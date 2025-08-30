@@ -3,7 +3,7 @@ WARNING: THIS PACKAGE IS CURRENTLY UNDER DEVELOPMENT
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/silo-app/assets/refs/heads/main/images/SILO_logo_API.png">
-    <img alt="Shows an illustrated sun in light color mode and a moon with stars in dark color mode." src="https://raw.githubusercontent.com/silo-app/assets/refs/heads/main/images/SILO_logo_API-dark.png">
+    <img width="300" alt="Shows an illustrated sun in light color mode and a moon with stars in dark color mode." src="https://raw.githubusercontent.com/silo-app/assets/refs/heads/main/images/SILO_logo_API-dark.png">
   </picture>
 </p>
 
