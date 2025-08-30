@@ -1,15 +1,17 @@
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, UniqueConstraint
+
 from silo.database.models import Base
 from silo.database.models.Base import TimestampMixin
-from sqlalchemy.orm import Mapped, mapped_column
+
+if TYPE_CHECKING:
+    from silo.database.models import StorageArea
 
 
 class StorageFurniture(Base, TimestampMixin):
     __tablename__ = "storage_furniture"
 
-    # id: Mapped[int] = mapped_column("id", autoincrement=True, primary_key=True)
-    # id: Mapped[int] = mapped_column("id", autoincrement=True, nullable=False, unique=True, primary_key=True, init=False)
-    # id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     id: Mapped[int] = mapped_column(
         "id",
         autoincrement=True,
@@ -24,6 +26,10 @@ class StorageFurniture(Base, TimestampMixin):
     room_id: Mapped[int] = mapped_column(ForeignKey("room.id"), nullable=False)
     storage_type_id: Mapped[int] = mapped_column(
         ForeignKey("storage_type.id"), nullable=False
+    )
+
+    storage_areas: Mapped[list["StorageArea"]] = relationship(
+        back_populates="furniture", lazy="selectin", default_factory=list
     )
 
     __table_args__ = (

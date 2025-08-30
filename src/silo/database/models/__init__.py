@@ -5,5 +5,6 @@ from .ItemType import ItemType
 from .Pool import Pool
 from .StorageType import StorageType
 from .StorageFurniture import StorageFurniture
+from .StorageArea import StorageArea
 from .Room import Room
 from .Role import Role

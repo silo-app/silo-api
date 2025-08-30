@@ -79,6 +79,7 @@ async def new_item(
     )
     session.add(new_item)
     await session.commit()
+    await session.refresh(new_item)
     return new_item
 
 

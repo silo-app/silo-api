@@ -1,9 +1,10 @@
 from silo.schemas.Base import TimestampSchema
 from pydantic import BaseModel, Field
 
+from .StorageArea import StorageAreaRead
+
 
 class ItemBase(BaseModel):
-
     name: str = Field()
     description: str = Field()
     quantity: int = Field()
@@ -15,15 +16,16 @@ class ItemBase(BaseModel):
 
 
 class ItemCreate(ItemBase):
-
     type_id: int = Field()
     pool_id: int = Field()
+    storage_area_id: int = Field()
 
     class Config:
         json_schema_extra = {
             "example": {
                 "type_id": 2,
                 "pool_id": 4,
+                "storage_area_id": 32,
                 "name": "3m Ethernet cable CAT.8",
                 "description": "3m yellow ethernet cable (CAT.8)",
                 "quantity": 3,
@@ -36,9 +38,9 @@ class ItemCreate(ItemBase):
 
 
 class ItemRead(ItemBase, TimestampSchema):
-
     id: int = Field()
     silo_id: str = Field()
+    storage_area: StorageAreaRead
 
     class Config:
         json_schema_extra = {

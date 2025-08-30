@@ -11,6 +11,7 @@ from .Pool import PoolBase, PoolCreate, PoolRead
 from .User import UserBase, UserCreate, UserRead
 from .Role import RoleBase, RoleCreate, RoleRead
 from .StorageType import StorageTypeBase, StorageTypeCreate, StorageTypeRead
+from .StorageArea import StorageAreaBase, StorageAreaCreate, StorageAreaRead
 from .StorageFurniture import (
     StorageFurnitureBase,
     StorageFurnitureCreate,

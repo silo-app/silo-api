@@ -1,6 +1,11 @@
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from silo.database.models import Base
 from silo.database.models.Base import TimestampMixin
-from sqlalchemy.orm import Mapped, mapped_column
+
+if TYPE_CHECKING:
+    from silo.database.models import StorageArea
 
 
 class Room(Base, TimestampMixin):
@@ -16,3 +21,7 @@ class Room(Base, TimestampMixin):
     )
     name: Mapped[str] = mapped_column("name", nullable=False, unique=True)
     description: Mapped[str]
+
+    storage_areas: Mapped[list["StorageArea"]] = relationship(
+        back_populates="room", default_factory=list
+    )

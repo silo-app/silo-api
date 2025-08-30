@@ -1,17 +1,14 @@
 import pathlib
-from fastapi import FastAPI, HTTPException, Request
-
 import fnmatch
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
-from fastapi.staticfiles import StaticFiles
 from silo.api import router
 from silo import config
 from silo.log import logger
-
-
 from silo.security.jwt import verify_token
 from silo.startup import create_tables, add_default_roles, add_default_admin
 from silo.security.authenticator_factory import create_authenticator
@@ -19,7 +16,6 @@ from silo.security.authenticator_factory import create_authenticator
 
 @asynccontextmanager
 async def db_lifespan(app: FastAPI):
-
     # check authentication class configuration
     create_authenticator()
     # by calling create_authenticator an instance will be created and if the class is misconfigured a TypeError will be thrown
