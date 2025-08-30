@@ -1,13 +1,52 @@
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select
+from sqlalchemy import func, select, or_, and_
 
 from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
-from silo.schemas import ItemCreate, ItemRead
+from silo.schemas import ItemCreate, ItemRead, ItemSearch
 
 items_router = APIRouter(tags=["Item"], dependencies=[Depends(require_permission())])
+
+
+@items_router.get(
+    "/item/search",
+    summary="Search Items",
+    response_model=list[ItemRead],
+)
+async def search_items(
+    params: ItemSearch = Depends(),
+    session: AsyncSession = Depends(async_get_db),
+):
+    search_conditions = []
+    statement = select(models.Item)
+
+    if params.q:
+        search_conditions.append(
+            or_(
+                models.Item.name.ilike(f"%{params.q}%"),
+                models.Item.description.ilike(f"%{params.q}%"),
+            )
+        )
+
+    if params.room_id:
+        statement = statement.join(models.Item.storage_area)
+        search_conditions.append(models.StorageArea.room_id == params.room_id)
+
+    if params.furniture_id:
+        if not params.room_id:
+            statement = statement.join(models.Item.storage_area)
+        search_conditions.append(models.StorageArea.furniture_id == params.furniture_id)
+
+    if search_conditions:
+        statement = statement.where(and_(*search_conditions))
+
+    # pagination
+    statement = statement.limit(params.limit).offset(params.offset)
+
+    result = await session.scalars(statement)
+    return result.all()
 
 
 @items_router.get(

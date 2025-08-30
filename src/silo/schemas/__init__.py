@@ -6,6 +6,7 @@ from .LoginIn import LoginIn
 
 from .Item import ItemBase, ItemCreate, ItemRead
 from .ItemType import ItemTypeBase, ItemTypeCreate, ItemTypeRead
+from .ItemSearch import ItemSearch
 from .Room import RoomBase, RoomCreate, RoomRead
 from .Pool import PoolBase, PoolCreate, PoolRead
 from .User import UserBase, UserCreate, UserRead
