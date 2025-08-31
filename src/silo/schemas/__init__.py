@@ -18,3 +18,4 @@ from .StorageFurniture import (
     StorageFurnitureCreate,
     StorageFurnitureRead,
 )
+from .Tag import TagBase, TagRead, TagCreate

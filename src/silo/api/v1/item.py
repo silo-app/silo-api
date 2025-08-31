@@ -79,6 +79,17 @@ async def get_items(
 
 
 @items_router.post(
+    "/item/{item_id}/tags/{tag_id}",
+    summary="Assign a Tag to an Item",
+    response_model=ItemRead,
+)
+async def assign_tag(
+    item_id: int, tag_id: int, session: AsyncSession = Depends(async_get_db)
+) -> ItemRead:
+    pass
+
+
+@items_router.post(
     "/item/",
     summary="Add a new Item",
     response_model=ItemRead,

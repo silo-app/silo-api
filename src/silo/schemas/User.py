@@ -5,12 +5,10 @@ from silo.schemas.Role import RoleRead
 
 
 class UserBase(BaseModel):
-
     username: str
 
 
 class UserCreate(UserBase):
-
     class Config:
         json_schema_extra = {
             "example": {
@@ -20,7 +18,6 @@ class UserCreate(UserBase):
 
 
 class UserRead(UserBase, TimestampSchema):
-
     id: int = Field()
     roles: list[RoleRead] = Field(default_factory=list)
 

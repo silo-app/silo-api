@@ -12,6 +12,7 @@ from .storagetype import storage_type_router
 from .storagearea import storage_area_router
 from .storagefurniture import storage_furniture_router
 from .role import role_router
+from .tag import tag_router
 
 router = APIRouter(prefix="/v1")
 
@@ -25,5 +26,6 @@ router.include_router(item_type_router)
 router.include_router(storage_type_router)
 router.include_router(storage_furniture_router)
 router.include_router(room_router)
+router.include_router(tag_router)
 router.include_router(user_router)
 router.include_router(role_router)

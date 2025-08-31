@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
 from silo.schemas.Base import TimestampSchema
 from pydantic import BaseModel, Field
 
+from .Tag import TagRead
 from .StorageArea import StorageAreaRead
+
+if TYPE_CHECKING:
+    from silo.schemas import TagRead
 
 
 class ItemBase(BaseModel):
@@ -41,6 +46,7 @@ class ItemRead(ItemBase, TimestampSchema):
     id: int = Field()
     silo_id: str = Field()
     storage_area: StorageAreaRead
+    tags: list["TagRead"] = Field(default_factory=list)
 
     class Config:
         json_schema_extra = {

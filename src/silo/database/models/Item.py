@@ -3,10 +3,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from silo.database.models import Base
+from silo.database.models.ItemTag import item_tag_association
 from silo.database.models.Base import TimestampMixin
 
 if TYPE_CHECKING:
-    from silo.database.models import StorageArea
+    from silo.database.models import StorageArea, Tag
 
 
 class Item(Base, TimestampMixin):
@@ -36,6 +37,14 @@ class Item(Base, TimestampMixin):
     )
     storage_area: Mapped["StorageArea"] = relationship(
         back_populates="items", lazy="selectin", init=False
+    )
+
+    tags: Mapped[list["Tag"]] = relationship(
+        "Tag",
+        secondary=item_tag_association,
+        back_populates="items",
+        lazy="selectin",
+        default_factory=list,
     )
 
     weight: Mapped[int | None] = mapped_column(default=None)
