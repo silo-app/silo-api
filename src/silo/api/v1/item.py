@@ -86,7 +86,44 @@ async def get_items(
 async def assign_tag(
     item_id: int, tag_id: int, session: AsyncSession = Depends(async_get_db)
 ) -> ItemRead:
-    pass
+    item: ItemRead = session.get(models.Item, item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+
+    tag = session.get(models.Tag, tag_id)
+    if tag is None:
+        raise HTTPException(status_code=404, detail=f"Tag {tag_id} not found")
+
+    if tag not in item.tags:
+        item.tags.append(tag)
+        await session.commit()
+        await session.refresh(item)
+
+    return item
+
+
+@items_router.delete(
+    "/item/{item_id}/tags/{tag_id}",
+    summary="Delete a Tag on an Item",
+    response_model=ItemRead,
+)
+async def delete_assigned_tag(
+    item_id: int, tag_id: int, session: AsyncSession = Depends(async_get_db)
+) -> ItemRead:
+    item: ItemRead = session.get(models.Item, item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+
+    tag = session.get(models.Tag, tag_id)
+    if tag is None:
+        raise HTTPException(status_code=404, detail=f"Tag {tag_id} not found")
+
+    if tag in item.tags:
+        item.tags.remove(tag)
+        await session.commit()
+        await session.refresh(item)
+
+    return item
 
 
 @items_router.post(

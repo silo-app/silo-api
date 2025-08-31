@@ -1,6 +1,8 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
-from silo.schemas.Base import TimestampSchema
 from pydantic import BaseModel, Field
+
+from silo.schemas.Base import TimestampSchema
 
 if TYPE_CHECKING:
     from silo.schemas import ItemRead

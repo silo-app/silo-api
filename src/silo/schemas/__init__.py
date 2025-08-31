@@ -19,3 +19,6 @@ from .StorageFurniture import (
     StorageFurnitureRead,
 )
 from .Tag import TagBase, TagRead, TagCreate
+
+ItemRead.model_rebuild()
+TagRead.model_rebuild()
