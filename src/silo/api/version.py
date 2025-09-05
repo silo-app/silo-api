@@ -8,13 +8,17 @@ version_router = APIRouter(tags=["version"])
 
 @version_router.get(
     "/version",
-    response_description="Get application version",
+    response_description="Get API versions",
     status_code=200,
     response_model=Version,
-    summary="Get app name, app version and stable API version",
+    summary="Get all API versions",
 )
 async def version():
     return {
-        "app_name": config.app_name,
-        "version": config.version,
+        "current": config.api_version,
+        "available": ["v1"],
+        "endpoints": {
+            "current": config.api_version,
+            "v1": "/api/v1/",
+        },
     }

@@ -43,3 +43,13 @@ async def verify_token(token: str) -> dict:
 
     except PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def create_refresh_token(sub: str) -> str:
+    payload = {
+        "sub": sub,
+        "exp": datetime.now(timezone.utc)
+        + timedelta(days=config.refresh_token_expire_days),
+        "iat": datetime.now(timezone.utc),
+    }
+    return jwt.encode(payload, str(config.secret_key), algorithm=config.jwt_algorithm)

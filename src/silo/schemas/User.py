@@ -6,6 +6,7 @@ from silo.schemas.Role import RoleRead
 
 class UserBase(BaseModel):
     username: str
+    full_name: str | None = "Max Mustermann"
 
 
 class UserCreate(UserBase):

@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyUrl, Field, SecretStr, PostgresDsn
 from pathlib import Path
 from typing import Type
@@ -9,7 +9,6 @@ THIS_PARENT_DIR = Path(__file__).parent.resolve()
 
 
 class AppConfig(BaseSettings):
-
     app_name: str = "SILO"
     version: str = "0.0.1"
     api_version: str = "v1"
@@ -17,15 +16,15 @@ class AppConfig(BaseSettings):
     debug_mode: bool = False
     dev_mode: bool = False
 
-    allowed_origins: list[AnyUrl] = ["http://localhost:5173"]
+    allowed_origins: list[AnyUrl] = ["http://localhost:3000"]
     allowed_paths_without_auth: list[str] = [
         "/openapi.json",
         "/redoc",
         "/docs",
         "/static/favicon.png",
         "/static/logo.png",
-        "/version",
-        "/auth/token",
+        "/api/version",
+        "/auth/login",
     ]
 
     # postgresql+asyncpg://<db_username>:<db_secret>@<db_host>:<db_port>/<db_name>
@@ -56,6 +55,12 @@ class AppConfig(BaseSettings):
     secret_key: SecretStr
 
     first_admin_user: str | None = None
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="silo_",
+    )
 
 
 config = AppConfig()

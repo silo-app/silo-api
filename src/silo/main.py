@@ -38,6 +38,7 @@ app: FastAPI = FastAPI(
     title="SILO API",
     lifespan=db_lifespan,
     version=config.api_version,
+    description=f"**Latest API version (default): {config.api_version}**</br></br>**/api -> /api/{config.api_version}**</br></br>Call **/api/version** to check available and the latest version.",
     contact={
         "name": "Marcel-Brian Wilkowsky",
         "url": "https://silo.mawidev.de",
@@ -64,6 +65,7 @@ app: FastAPI = FastAPI(
         },
     },
 )
+
 
 app.include_router(router)
 
@@ -112,7 +114,7 @@ async def http_auth_middleware(request: Request, call_next):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=config.allowed_origins,
+    allow_origins=[str(url) for url in config.allowed_origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

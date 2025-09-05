@@ -1,20 +1,21 @@
-from typing import Annotated
 from pydantic import BaseModel, Field
 
 from silo import config
 
 
 class Version(BaseModel):
-
-    app_name: Annotated[str, Field(default=config.app_name)]
-    app_version: Annotated[str, Field(default=config.version)]
-    api_version: Annotated[str, Field(default=config.api_version)]
+    current: str = Field(default=config.api_version)
+    available: list[str] = Field()
+    endpoints: dict[str, list | str] = Field()
 
     class Config:
         json_schema_extra = {
             "example": {
-                "app_name": "SILO",
-                "app_version": "1.0",
-                "api_version": "v1",
+                "current": "v1",
+                "available": ["v1"],
+                "endpoints": {
+                    "current": "/api/",
+                    "v1": "/api/v1/",
+                },
             }
         }

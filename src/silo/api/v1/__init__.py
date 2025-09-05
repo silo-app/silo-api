@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .version import version_router
+from ..version import version_router
 from .auth import auth_router
 
 from .user import user_router
@@ -14,7 +14,7 @@ from .storagefurniture import storage_furniture_router
 from .role import role_router
 from .tag import tag_router
 
-router = APIRouter(prefix="/v1")
+router = APIRouter()
 
 router.include_router(version_router)
 router.include_router(auth_router)
