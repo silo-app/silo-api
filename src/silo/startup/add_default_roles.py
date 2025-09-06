@@ -17,7 +17,10 @@ async def add_default_roles() -> None:
         admin_role = result.scalar_one_or_none()
         if admin_role is None:
             db.add(
-                Role(name="admin", permissions={"*": ["GET", "POST", "PUT", "DELETE"]})
+                Role(
+                    name="admin",
+                    permissions={"*": ["GET", "POST", "PUT", "PATCH", "DELETE"]},
+                )
             )
             await db.commit()
             print("[SILO] Added default role 'admin'")

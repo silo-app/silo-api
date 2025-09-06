@@ -188,11 +188,29 @@ async def update_item(
         setattr(item, k, v)
 
     await session.commit()
+    await session.refresh(item)
+
+
+@items_router.patch(
+    "/item-delete/{id}",
+    summary="Mark an Item as deleted",
+    status_code=204,
+)
+async def mark_item_as_deleted(id: int, session: AsyncSession = Depends(async_get_db)):
+    item: ItemRead = session.get(models.Item, id)
+
+    if item is None:
+        raise HTTPException(404, detail="Item not found")
+
+    item.deleted = True
+
+    await session.commit()
+    await session.refresh(item)
 
 
 @items_router.delete(
     "/item/{id}",
-    summary="Delete an Item",
+    summary="Delete an Item from database",
     status_code=204,
 )
 async def delete_item(id: int, session: AsyncSession = Depends(async_get_db)):
