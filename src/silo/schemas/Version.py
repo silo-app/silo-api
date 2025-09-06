@@ -4,6 +4,7 @@ from silo import config
 
 
 class Version(BaseModel):
+    app_version: str = Field()
     current: str = Field(default=config.api_version)
     available: list[str] = Field()
     endpoints: dict[str, list | str] = Field()
@@ -11,6 +12,7 @@ class Version(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
+                "app_version": config.version,
                 "current": "v1",
                 "available": ["v1"],
                 "endpoints": {
