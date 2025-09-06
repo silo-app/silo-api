@@ -78,6 +78,29 @@ async def get_items(
     return [ItemRead.model_validate(item, from_attributes=True) for item in items]
 
 
+@items_router.get(
+    "/item/by-silo-id/{silo_id}",
+    summary="Get a specific Item using the SILO id",
+    response_model=ItemRead,
+    responses={403: {"description": "Forbidden – missing required permissions"}},
+)
+async def get_item_by_silo_id(
+    silo_id: str,
+    session: AsyncSession = Depends(async_get_db),
+):
+    if silo_id is not None:
+        result = await session.scalars(
+            select(models.Item).where(models.Item.silo_id == silo_id)
+        )
+        item = result.one_or_none()
+        if item is not None:
+            return ItemRead.model_validate(item)
+
+    raise HTTPException(
+        status_code=404, datail=f"Item with SILO id {silo_id} not found!"
+    )
+
+
 @items_router.post(
     "/item/{item_id}/tags/{tag_id}",
     summary="Assign a Tag to an Item",
