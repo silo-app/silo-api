@@ -2,7 +2,7 @@ from . import Base
 from .Token import Token
 from .Version import Version
 from .Response import Response
-from .LoginIn import LoginIn
+from .AuthData import AuthData, UserAttributes
 
 from .Item import ItemBase, ItemCreate, ItemRead
 from .ItemType import ItemTypeBase, ItemTypeCreate, ItemTypeRead

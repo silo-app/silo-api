@@ -5,13 +5,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jwt.exceptions import PyJWTError
 
 from silo import config
+from silo.log import logger
 from silo.database import async_get_db, models
 from silo.schemas import Token
 from silo.security.jwt import create_access_token, create_refresh_token, decode_token
 from silo.security.authenticator_factory import create_authenticator
 from silo.security.authenticator.exceptions import (
+    BindError,
     InvalidCredentialsError,
     AuthenticationError,
+    NotAllowedError,
+    UserNotFound,
+    AuthTimeoutError,
 )
 
 
@@ -66,13 +71,27 @@ async def access_token(
 
     authenticator = create_authenticator()
     try:
-        authenticate = authenticator.authenticate(username, password)
+        authenticate = authenticator.authenticate(username=username, password=password)
         if authenticate is False:
             raise InvalidCredentialsError()
     except InvalidCredentialsError:
+        logger.info("Invalid credentials for user %s", username)
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    except AuthenticationError:
-        raise HTTPException(status_code=401, detail="Error authenticating user")
+    except AuthenticationError as e:
+        logger.error("Error authenticating user %s: %s", username, e)
+        raise HTTPException(status_code=503, detail=f"Error authenticating user: {e}")
+    except UserNotFound:
+        logger.info("The user %s does not exists in authenticator source", username)
+        raise HTTPException(status_code=401, detail="User does not exists")
+    except NotAllowedError:
+        logger.error("Not allowed to fetch user data for user %s?", username)
+        raise HTTPException(status_code=401, detail="Not allowed to fetch user data")
+    except AuthTimeoutError as e:
+        logger.error("Timeout error authenticating user %s: %s", username, e)
+        raise HTTPException(status_code=503, detail="Timeout error")
+    except BindError as e:
+        logger.error("Error binding user %s: %s", username, e)
+        raise HTTPException(status_code=401, detail=f"Error binding user: {e}")
 
     result = await session.scalars(
         select(models.User).where(models.User.username == username)

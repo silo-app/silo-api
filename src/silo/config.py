@@ -3,7 +3,8 @@ from pydantic import HttpUrl, Field, SecretStr, PostgresDsn
 from pathlib import Path
 from typing import Type
 
-from silo.security.authenticator import LDAPAuthenticator
+
+# from silo.security.authenticator import LDAPAuthenticator
 
 THIS_PARENT_DIR = Path(__file__).parent.resolve()
 
@@ -41,15 +42,29 @@ class AppConfig(BaseSettings):
 
     # authentication / authorization
 
-    authenticator_class: Type = LDAPAuthenticator
+    authenticator_class: Type | str = "silo.security.authenticator.LDAPAuthenticator"
+
+    ########
 
     ldap_server_uri: str
+    ldap_connect_timeout: int = 5  # seconds
+    ldap_receive_timeout: int = 10  # seconds
     ldap_base_dn: str
     ldap_user_dn_template: str
     ldap_use_ssl: bool = True
+    ldap_base_user_dn: str | None = None
+    ldap_user_search_filter: str = "(uid={username})"
+
+    ldap_username_attribute: str = "uid"
+    ldap_mail_attribute: str = "mail"
+    ldap_groups_attribute: str = "memberOf"
+    ldap_display_name_attribute: str = "cn"
+
     ldap_ssl_skip_verify: bool = False
     ldap_bind_dn: str | None = None
     ldap_bind_pw: str | None = None
+
+    ########
     ldap_allowed_groups: list[str] | None = None
 
     access_token_expire_minutes: int = 60

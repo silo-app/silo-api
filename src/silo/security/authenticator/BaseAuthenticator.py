@@ -1,19 +1,13 @@
 from abc import ABC, abstractmethod
 
+from silo.schemas import AuthData, UserAttributes
+
 
 class BaseAuthenticator(ABC):
-
     @abstractmethod
-    def authenticate(self, username: str, password: str) -> bool:
+    def authenticate(self, **kwargs: AuthData) -> bool:
         pass
 
     @abstractmethod
-    def get_fullname(self) -> str:
-        """
-
-        Must return the users full name from child class
-
-        Returns:
-            str: The users full name. Example: Max Mustermann
-        """
+    def get_user_attributes(self) -> UserAttributes:
         pass

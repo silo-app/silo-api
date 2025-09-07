@@ -1,12 +1,15 @@
 from silo import config
+from silo.utils import load_class_from_string
 from silo.security import authenticator
 
 
 def create_authenticator() -> authenticator.BaseAuthenticator:
-    auth_class = config.authenticator_class
+    if isinstance(config.authenticator_class, str):
+        auth_class = load_class_from_string(config.authenticator_class)
+    else:
+        auth_class = config.authenticator_class
 
     match auth_class:
-
         # LDAPAuthenticator
         case authenticator.LDAPAuthenticator:
             return auth_class(

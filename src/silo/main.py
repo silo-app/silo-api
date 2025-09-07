@@ -16,6 +16,10 @@ from silo.security.authenticator_factory import create_authenticator
 
 @asynccontextmanager
 async def db_lifespan(app: FastAPI):
+    # check log level
+    logger.info(f"Starting application with log level: {config.log_level}")
+    print(f"Starting application with log level: {config.log_level}")
+
     # check authentication class configuration
     create_authenticator()
     # by calling create_authenticator an instance will be created and if the class is misconfigured a TypeError will be thrown
