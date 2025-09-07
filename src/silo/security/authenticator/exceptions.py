@@ -14,6 +14,10 @@ class NotAllowedError(Exception):
     pass
 
 
+class BindNotAllowedError(Exception):
+    pass
+
+
 class AuthTimeoutError(Exception):
     pass
 

@@ -16,10 +16,10 @@ from silo.schemas import AuthData, UserAttributes
 from silo.security.authenticator import BaseAuthenticator
 from silo.security.authenticator.exceptions import (
     AuthTimeoutError,
-    AuthenticationError,
     BindError,
     InvalidCredentialsError,
     NotAllowedError,
+    BindNotAllowedError,
     UserNotFound,
 )
 
@@ -68,7 +68,15 @@ class LDAPAuthenticator(BaseAuthenticator):
         try:
             # Even if return_user_attributes is False, lets check the user data with given bind dn/password
             # If the search filter has a filter for e.g. locked users, it will raise an exception
+            # We will also use the fetched user groups to check config.ldap_allowed_groups
             user_data = self.get_user_attributes(username)
+
+            if config.ldap_allowed_groups is not None:
+                if not any(
+                    group in user_data.get("groups", [])
+                    for group in config.ldap_allowed_groups
+                ):
+                    raise NotAllowedError()
 
             user_connection = Connection(
                 self.server,
@@ -83,7 +91,7 @@ class LDAPAuthenticator(BaseAuthenticator):
                 logger.info(
                     "[LDAPAuhtenticator] Successfully authenticated user %s", username
                 )
-                logger.error("[LDAPAuthenticator] User data: %s", user_data)
+                logger.debug("[LDAPAuthenticator] User data: %s", user_data)
                 if return_user_attributes is True:
                     return user_data
 
@@ -94,15 +102,13 @@ class LDAPAuthenticator(BaseAuthenticator):
         except LDAPNoSuchObjectResult:
             raise UserNotFound()
         except LDAPInsufficientAccessRightsResult:
-            raise NotAllowedError()
+            raise BindNotAllowedError()
         except LDAPResponseTimeoutError:
             raise TimeoutError()
         except LDAPSocketOpenError as e:
             raise AuthTimeoutError(e)
         except LDAPBindError as e:
             raise BindError(e)
-        except Exception as e:
-            raise AuthenticationError(e)
 
         return False
 
@@ -142,11 +148,15 @@ class LDAPAuthenticator(BaseAuthenticator):
         entry = connection.entries[0]
         connection.unbind()
 
+        groups = entry[config.ldap_groups_attribute].value
+        if not isinstance(groups, list):
+            groups = [entry[config.ldap_groups_attribute].value]
+
         return {
             "username": entry[config.ldap_username_attribute].value
             if entry[config.ldap_username_attribute]
             else None,
-            "groups": entry[config.ldap_groups_attribute].value
+            "groups": [group for group in groups]
             if entry[config.ldap_groups_attribute]
             else [],
             "mail": entry[config.ldap_mail_attribute].value

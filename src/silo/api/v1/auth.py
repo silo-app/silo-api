@@ -15,6 +15,7 @@ from silo.security.authenticator.exceptions import (
     InvalidCredentialsError,
     AuthenticationError,
     NotAllowedError,
+    BindNotAllowedError,
     UserNotFound,
     AuthTimeoutError,
 )
@@ -83,8 +84,11 @@ async def access_token(
     except UserNotFound:
         logger.info("The user %s does not exists in authenticator source", username)
         raise HTTPException(status_code=401, detail="User does not exists")
-    except NotAllowedError:
+    except BindNotAllowedError:
         logger.error("Not allowed to fetch user data for user %s?", username)
+        raise HTTPException(status_code=401, detail="Not allowed to fetch user data")
+    except NotAllowedError:
+        logger.error("The user %s is not allowed to login!", username)
         raise HTTPException(status_code=401, detail="Not allowed to fetch user data")
     except AuthTimeoutError as e:
         logger.error("Timeout error authenticating user %s: %s", username, e)

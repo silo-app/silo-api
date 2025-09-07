@@ -44,8 +44,6 @@ class AppConfig(BaseSettings):
 
     authenticator_class: Type | str = "silo.security.authenticator.LDAPAuthenticator"
 
-    ########
-
     ldap_server_uri: str
     ldap_connect_timeout: int = 5  # seconds
     ldap_receive_timeout: int = 10  # seconds
@@ -54,6 +52,7 @@ class AppConfig(BaseSettings):
     ldap_use_ssl: bool = True
     ldap_base_user_dn: str | None = None
     ldap_user_search_filter: str = "(uid={username})"
+    ldap_allowed_groups: list[str] | None = None
 
     ldap_username_attribute: str = "uid"
     ldap_mail_attribute: str = "mail"
@@ -63,9 +62,6 @@ class AppConfig(BaseSettings):
     ldap_ssl_skip_verify: bool = False
     ldap_bind_dn: str | None = None
     ldap_bind_pw: str | None = None
-
-    ########
-    ldap_allowed_groups: list[str] | None = None
 
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 7
