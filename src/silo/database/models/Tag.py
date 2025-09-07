@@ -28,4 +28,5 @@ class Tag(Base, TimestampMixin):
         "Item",
         secondary=item_tag_association,
         back_populates="tags",
+        default_factory=list,
     )

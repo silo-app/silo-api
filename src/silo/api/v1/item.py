@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select, or_, and_
+from sqlalchemy import func, select, or_, and_, inspect
 
 from silo.api.dependencies import require_permission
 from silo.database import async_get_db
@@ -45,7 +45,7 @@ async def search_items(
     # pagination
     statement = statement.limit(params.limit).offset(params.offset)
 
-    result = await session.scalars(statement)
+    result = await session.scalars(statement.where(not models.Item.deleted))
     return result.all()
 
 
@@ -105,15 +105,16 @@ async def get_item_by_silo_id(
     "/item/{item_id}/tags/{tag_id}",
     summary="Assign a Tag to an Item",
     response_model=ItemRead,
+    tags=["Tag"],
 )
 async def assign_tag(
     item_id: int, tag_id: int, session: AsyncSession = Depends(async_get_db)
 ) -> ItemRead:
-    item: ItemRead = session.get(models.Item, item_id)
+    item: models.Item = await session.get(models.Item, item_id)
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    tag = session.get(models.Tag, tag_id)
+    tag = await session.get(models.Tag, tag_id)
     if tag is None:
         raise HTTPException(status_code=404, detail=f"Tag {tag_id} not found")
 
@@ -122,13 +123,14 @@ async def assign_tag(
         await session.commit()
         await session.refresh(item)
 
-    return item
+    return ItemRead.model_validate(item, from_attributes=True)
 
 
 @items_router.delete(
     "/item/{item_id}/tags/{tag_id}",
     summary="Delete a Tag on an Item",
     response_model=ItemRead,
+    tags=["Tag"],
 )
 async def delete_assigned_tag(
     item_id: int, tag_id: int, session: AsyncSession = Depends(async_get_db)
@@ -146,7 +148,7 @@ async def delete_assigned_tag(
         await session.commit()
         await session.refresh(item)
 
-    return item
+    return ItemRead.model_validate(item, from_attributes=True)
 
 
 @items_router.post(
@@ -214,8 +216,78 @@ async def update_item(
     await session.refresh(item)
 
 
+@items_router.post(
+    "/item/{id}/clone",
+    response_model=ItemRead,
+    summary="Clone an Item",
+)
+async def clone_item(
+    id: int,
+    modifications: ItemCreate | None = None,
+    session: AsyncSession = Depends(async_get_db),
+):
+    item: models.Item = await session.get(models.Item, id)
+    if item is None:
+        raise HTTPException(404, detail="Item not found")
+
+    inspect_item = inspect(models.Item)
+
+    new_item_dict = {}
+    for attribute in inspect_item.attrs:
+        if hasattr(item, attribute.key) and attribute.key not in [
+            "id",
+            "created_at",
+            "updated_at",
+            "storage_area",
+            "silo_id",
+            "sequence_num",
+        ]:
+            value = getattr(item, attribute.key)
+            new_item_dict[attribute.key] = value
+
+    # reset not necessary values
+    new_item_dict["serial_number"] = None
+    new_item_dict["deleted"] = False
+
+    # handle SILO id
+    type_id = item.type_id
+    pool_id = item.pool_id
+    result = await session.scalars(
+        select(
+            func.max(models.Item.sequence_num).filter(
+                models.Item.type_id == type_id, models.Item.pool_id == pool_id
+            )
+        )
+    )
+    sequence_num = result.first()
+    next_sequence_num = (sequence_num or 0) + 1
+    result_type_name = await session.scalars(
+        select(models.ItemType.name).where(models.ItemType.id == type_id)
+    )
+    type_name = result_type_name.one_or_none()
+    result_pool_name = await session.scalars(
+        select(models.Pool.name).where(models.Pool.id == pool_id)
+    )
+    pool_name = result_pool_name.one_or_none()
+    silo_id = f"{type_name}-{pool_name}-{next_sequence_num:04d}"
+
+    # apply custom modifications
+    if modifications:
+        for key, val in modifications.items():
+            new_item_dict[key] = val
+
+    new_item = models.Item(
+        **new_item_dict, sequence_num=next_sequence_num, silo_id=silo_id
+    )
+    session.add(new_item)
+    await session.commit()
+    await session.refresh(new_item)
+
+    return new_item
+
+
 @items_router.patch(
-    "/item-delete/{id}",
+    "/item/{id}/delete",
     summary="Mark an Item as deleted",
     status_code=204,
 )

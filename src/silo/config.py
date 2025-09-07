@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import AnyUrl, Field, SecretStr, PostgresDsn
+from pydantic import HttpUrl, Field, SecretStr, PostgresDsn
 from pathlib import Path
 from typing import Type
 
@@ -16,7 +16,9 @@ class AppConfig(BaseSettings):
     debug_mode: bool = False
     dev_mode: bool = False
 
-    allowed_origins: list[AnyUrl] = ["http://localhost:3000"]
+    first_admin_user: str | None = None
+
+    allowed_origins: list[HttpUrl] = ["http://localhost:3000"]
     allowed_paths_without_auth: list[str] = [
         "/openapi.json",
         "/redoc",
@@ -24,7 +26,8 @@ class AppConfig(BaseSettings):
         "/static/favicon.png",
         "/static/logo.png",
         "/api/version",
-        "/auth/login",
+        "/api/v1/auth/login",
+        "/api/auth/login",
     ]
 
     # postgresql+asyncpg://<db_username>:<db_secret>@<db_host>:<db_port>/<db_name>
@@ -53,8 +56,6 @@ class AppConfig(BaseSettings):
     refresh_token_expire_days: int = 7
     jwt_algorithm: str = "HS256"
     secret_key: SecretStr
-
-    first_admin_user: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=".env",

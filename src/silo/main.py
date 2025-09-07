@@ -114,7 +114,7 @@ async def http_auth_middleware(request: Request, call_next):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[str(url) for url in config.allowed_origins],
+    allow_origins=[str(url).rstrip("/") for url in config.allowed_origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

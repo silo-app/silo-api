@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+
+# from typing import TYPE_CHECKING
 from pydantic import BaseModel, Field
 
 from silo.schemas.Base import TimestampSchema
 
-if TYPE_CHECKING:
-    from silo.schemas import ItemRead
+# if TYPE_CHECKING:
+#    from silo.schemas import ItemRead
 
 
 class TagBase(BaseModel):
@@ -27,7 +28,7 @@ class TagCreate(TagBase):
 
 class TagRead(TagBase, TimestampSchema):
     id: int = Field()
-    item: list["ItemRead"] = Field(default_factory=list)
+    # items: list["ItemRead"] = Field(default_factory=list)
 
     class Config:
         json_schema_extra = {
