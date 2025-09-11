@@ -9,3 +9,4 @@ from .StorageArea import StorageArea
 from .Room import Room
 from .Role import Role
 from .Tag import Tag
+from .Comment import Comment

@@ -19,6 +19,7 @@ from .StorageFurniture import (
     StorageFurnitureRead,
 )
 from .Tag import TagBase, TagRead, TagCreate
+from .Comment import CommentBase, CommentRead, CommentCreate
 
 ItemRead.model_rebuild()
 TagRead.model_rebuild()

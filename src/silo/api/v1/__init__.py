@@ -13,6 +13,7 @@ from .storagearea import storage_area_router
 from .storagefurniture import storage_furniture_router
 from .role import role_router
 from .tag import tag_router
+from .comment import comment_router
 
 router = APIRouter()
 
@@ -29,3 +30,4 @@ router.include_router(room_router)
 router.include_router(tag_router)
 router.include_router(user_router)
 router.include_router(role_router)
+router.include_router(comment_router)
