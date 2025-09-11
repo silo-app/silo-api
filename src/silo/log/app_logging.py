@@ -1,5 +1,6 @@
 from logging import Formatter, getLogger, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from logging.config import dictConfig
+import inspect
 from sys import stdout, exit
 
 from silo import config
@@ -62,8 +63,12 @@ try:
     dictConfig(LOGGING_CONFIG)
     print(f"[APPLICATION LOGGING] Log file: {config.log_directory}/silo.log")
 except ValueError as e:
-    print(f"[ERROR] Cannot configure application!!! {e}")
+    print(f"[ERROR] Cannot configure application logging!!! {e}")
     print("Exiting...")
     exit(1)
 
 logger = getLogger("silo")
+
+def api_logger(message: str):
+    caller = inspect.stack()[1][3]
+    logger.info("[%s] %s",  str(caller), message, stacklevel=2)
