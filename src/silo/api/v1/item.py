@@ -1,11 +1,12 @@
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select, or_, and_, inspect
+from sqlalchemy import func, select, or_, and_, inspect, delete
 
 from silo.api.dependencies import require_permission
 from silo.database import async_get_db
 from silo.database import models
 from silo.schemas import ItemCreate, ItemRead, ItemSearch
+from silo.log import api_logger
 
 items_router = APIRouter(tags=["Item"], dependencies=[Depends(require_permission())])
 
@@ -309,6 +310,14 @@ async def mark_item_as_deleted(id: int, session: AsyncSession = Depends(async_ge
     status_code=204,
 )
 async def delete_item(id: int, session: AsyncSession = Depends(async_get_db)):
+
+    # delete item comments
+    result = await session.execute(delete(models.Comment).where(models.Comment.item_id == id))
+    await session.commit()
+
+    api_logger(f"Deleted {result.rowcount} comments for item with id {id}")
+
+    # delete item    
     result = await session.scalars(select(models.Item).where(models.Item.id == id))
     item = result.first()
     if item is None:
