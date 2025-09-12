@@ -3,17 +3,23 @@ from pydantic import BaseModel, Field
 
 from silo.schemas.Role import RoleRead
 
+class UserUpdate(BaseModel):
+    full_name: str | None = None
+    email: str | None = None
+    is_active: bool = True
 
-class UserBase(BaseModel):
+class UserBase(UserUpdate):
     username: str
-    full_name: str | None = "Max Mustermann"
-
+    
 
 class UserCreate(UserBase):
     class Config:
         json_schema_extra = {
             "example": {
                 "username": "maxi",
+                "full_name": "Max Mustermann",
+                "email": "max.mustermann@example.com",
+                "is_active": True,
             }
         }
 
@@ -24,5 +30,12 @@ class UserRead(UserBase, TimestampSchema):
 
     class Config:
         json_schema_extra = {
-            "example": {"id": 5, "username": "maxi", "roles": ["admin"]}
+            "example": {
+                "id": 5,
+                "username": "maxi",
+                "full_name": "Max Mustermann",
+                "email": "max.mustermann@example.com",
+                "is_active": True,
+                "roles": ["admin"],
+            }
         }

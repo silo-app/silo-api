@@ -9,7 +9,7 @@ from .ItemType import ItemTypeBase, ItemTypeCreate, ItemTypeRead
 from .ItemSearch import ItemSearch
 from .Room import RoomBase, RoomCreate, RoomRead
 from .Pool import PoolBase, PoolCreate, PoolRead
-from .User import UserBase, UserCreate, UserRead
+from .User import UserBase, UserCreate, UserRead, UserUpdate
 from .Role import RoleBase, RoleCreate, RoleRead
 from .StorageType import StorageTypeBase, StorageTypeCreate, StorageTypeRead
 from .StorageArea import StorageAreaBase, StorageAreaCreate, StorageAreaRead

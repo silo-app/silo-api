@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from silo.database import async_get_db
 from silo.database import models
-from silo.schemas import Response, UserCreate, UserRead
+from silo.schemas import Response, UserCreate, UserRead, UserUpdate
 from silo.api.dependencies import get_current_user, require_permission
 
 user_router = APIRouter(tags=["User"], dependencies=[Depends(require_permission())])
@@ -34,9 +34,7 @@ async def get_users(
 
         raise HTTPException(status_code=404, detail=f"User {id} not found")
 
-    result = await session.scalars(
-        select(models.User).options(selectinload(models.User.roles))
-    )
+    result = await session.scalars(select(models.User).options(selectinload(models.User.roles)))
     users = result.all()
 
     return [UserRead.model_validate(user, from_attributes=True) for user in users]
@@ -58,9 +56,7 @@ async def get_me(
         409: {"model": Response, "description": "Unique constraint violation"},
     },
 )
-async def new_user(
-    user: UserCreate, session: AsyncSession = Depends(async_get_db)
-) -> UserRead:
+async def new_user(user: UserCreate, session: AsyncSession = Depends(async_get_db)) -> UserRead:
     data = user.model_dump(exclude=("roles"))
     new_user = models.User(**data)
     try:
@@ -93,9 +89,7 @@ async def assign_role(
     user: models.User | None = result_u.scalars().first()
     if user is None:
         raise HTTPException(404, detail="User not found")
-    result_r = await session.scalars(
-        select(models.Role).where(models.Role.id == role_id)
-    )
+    result_r = await session.scalars(select(models.Role).where(models.Role.id == role_id))
     role = result_r.one_or_none()
     if role is None:
         raise HTTPException(404, detail="Role not found")
@@ -113,3 +107,39 @@ async def assign_role(
     user = result.scalar_one()
 
     return user
+
+
+@user_router.put(
+    "/user/{id}",
+    summary="Update an existing User",
+    status_code=204,
+)
+async def update_user(
+    id: int, user_update: UserUpdate, session: AsyncSession = Depends(async_get_db)
+):
+    result = await session.scalars(select(models.User).where(models.User.id == id))
+    user = result.one_or_none()
+    if user is None:
+        raise HTTPException(404, detail="User not found")
+
+    update_data = user_update.model_dump()
+    for k, v in update_data.items():
+        setattr(user, k, v)
+
+    await session.commit()
+    await session.refresh(user)
+
+
+@user_router.delete(
+    "/user/{id}",
+    summary="Delete a User",
+    status_code=204,
+)
+async def delete_user(id: int, session: AsyncSession = Depends(async_get_db)):
+    result = await session.scalars(select(models.User).where(models.User.id == id))
+    user = result.one_or_none()
+    if user is None:
+        raise HTTPException(404, detail="User not found")
+
+    await session.delete(user)
+    await session.commit()
