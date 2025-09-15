@@ -34,7 +34,9 @@ async def get_users(
 
         raise HTTPException(status_code=404, detail=f"User {id} not found")
 
-    result = await session.scalars(select(models.User).options(selectinload(models.User.roles)))
+    result = await session.scalars(
+        select(models.User).options(selectinload(models.User.roles))
+    )
     users = result.all()
 
     return [UserRead.model_validate(user, from_attributes=True) for user in users]
@@ -56,7 +58,9 @@ async def get_me(
         409: {"model": Response, "description": "Unique constraint violation"},
     },
 )
-async def new_user(user: UserCreate, session: AsyncSession = Depends(async_get_db)) -> UserRead:
+async def new_user(
+    user: UserCreate, session: AsyncSession = Depends(async_get_db)
+) -> UserRead:
     data = user.model_dump(exclude=("roles"))
     new_user = models.User(**data)
     try:
@@ -89,7 +93,9 @@ async def assign_role(
     user: models.User | None = result_u.scalars().first()
     if user is None:
         raise HTTPException(404, detail="User not found")
-    result_r = await session.scalars(select(models.Role).where(models.Role.id == role_id))
+    result_r = await session.scalars(
+        select(models.Role).where(models.Role.id == role_id)
+    )
     role = result_r.one_or_none()
     if role is None:
         raise HTTPException(404, detail="Role not found")

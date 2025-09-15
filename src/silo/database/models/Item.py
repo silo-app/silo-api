@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, UniqueConstraint, Enum
 
@@ -34,7 +34,9 @@ class Item(Base, TimestampMixin):
 
     sequence_num: Mapped[int] = mapped_column()
 
-    storage_area_id: Mapped[int] = mapped_column(ForeignKey("storage_area.id"), nullable=False)
+    storage_area_id: Mapped[int] = mapped_column(
+        ForeignKey("storage_area.id"), nullable=False
+    )
     storage_area: Mapped["StorageArea"] = relationship(
         back_populates="items", lazy="selectin", init=False
     )
@@ -58,4 +60,6 @@ class Item(Base, TimestampMixin):
     deleted: Mapped[bool] = mapped_column(default=False)
     inventory_number: Mapped[str | None] = mapped_column(default=None)
 
-    __table_args__ = (UniqueConstraint("type_id", "pool_id", "sequence_num", name="silo_item_id"),)
+    __table_args__ = (
+        UniqueConstraint("type_id", "pool_id", "sequence_num", name="silo_item_id"),
+    )
