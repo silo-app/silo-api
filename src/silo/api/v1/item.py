@@ -23,11 +23,11 @@ async def search_items(
     search_conditions = []
     statement = select(models.Item)
 
-    if params.q:
+    if params.term:
         search_conditions.append(
             or_(
-                models.Item.name.ilike(f"%{params.q}%"),
-                models.Item.description.ilike(f"%{params.q}%"),
+                models.Item.name.ilike(f"%{params.term}%"),
+                models.Item.description.ilike(f"%{params.term}%"),
             )
         )
 
@@ -42,11 +42,10 @@ async def search_items(
 
     if search_conditions:
         statement = statement.where(and_(*search_conditions))
-
     # pagination
     statement = statement.limit(params.limit).offset(params.offset)
 
-    result = await session.scalars(statement.where(not models.Item.deleted))
+    result = await session.scalars(statement.where(models.Item.deleted.is_(False)))
     return result.all()
 
 
@@ -310,14 +309,15 @@ async def mark_item_as_deleted(id: int, session: AsyncSession = Depends(async_ge
     status_code=204,
 )
 async def delete_item(id: int, session: AsyncSession = Depends(async_get_db)):
-
     # delete item comments
-    result = await session.execute(delete(models.Comment).where(models.Comment.item_id == id))
+    result = await session.execute(
+        delete(models.Comment).where(models.Comment.item_id == id)
+    )
     await session.commit()
 
     api_logger(f"Deleted {result.rowcount} comments for item with id {id}")
 
-    # delete item    
+    # delete item
     result = await session.scalars(select(models.Item).where(models.Item.id == id))
     item = result.first()
     if item is None:
