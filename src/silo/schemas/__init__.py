@@ -21,5 +21,7 @@ from .StorageFurniture import (
 from .Tag import TagBase, TagRead, TagCreate
 from .Comment import CommentBase, CommentRead, CommentCreate
 
+from .BatteryType import BatteryType
+
 ItemRead.model_rebuild()
 TagRead.model_rebuild()

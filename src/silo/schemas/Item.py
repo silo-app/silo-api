@@ -5,6 +5,7 @@ from silo.schemas.Base import TimestampSchema
 from pydantic import BaseModel, Field
 
 from .StorageArea import StorageAreaRead
+from .BatteryType import BatteryType
 
 if TYPE_CHECKING:
     from silo.schemas import TagRead
@@ -19,6 +20,7 @@ class ItemBase(BaseModel):
     serial_number: str | None = Field(default=None)
     inventory_number: str | None = Field(default=None)
     deleted: bool = Field(default=False)
+    battery_type: BatteryType | None = Field(default=None)
 
 
 class ItemCreate(ItemBase):
@@ -37,6 +39,7 @@ class ItemCreate(ItemBase):
                 "quantity": 3,
                 "weight": 320,
                 "serial_number": "1200958493",
+                "battery_type": "AA",
                 "inventory_number": "4001-2384-88572",
                 "deleted": False,
             }
@@ -60,6 +63,7 @@ class ItemRead(ItemBase, TimestampSchema):
                 "serial_number": "1200958493",
                 "inventory_number": "4001-2384-88572",
                 "deleted": False,
+                "battery_type": "AAA",
                 "created_at": "2025-08-18T16:15:57.123232",
                 "updated_at": "2025-08-19T14:24:11.123232",
             }
