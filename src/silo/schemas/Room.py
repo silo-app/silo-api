@@ -3,13 +3,11 @@ from pydantic import BaseModel, Field
 
 
 class RoomBase(BaseModel):
-
     name: str = Field()
     description: str = Field()
 
 
 class RoomCreate(RoomBase):
-
     class Config:
         json_schema_extra = {
             "example": {
@@ -20,7 +18,6 @@ class RoomCreate(RoomBase):
 
 
 class RoomRead(RoomBase, TimestampSchema):
-
     id: int = Field()
 
     class Config:

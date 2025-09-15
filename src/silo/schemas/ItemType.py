@@ -3,13 +3,11 @@ from pydantic import BaseModel, Field
 
 
 class ItemTypeBase(BaseModel):
-
     name: str = Field()
     description: str = Field()
 
 
 class ItemTypeCreate(ItemTypeBase):
-
     class Config:
         json_schema_extra = {
             "example": {
@@ -20,7 +18,6 @@ class ItemTypeCreate(ItemTypeBase):
 
 
 class ItemTypeRead(ItemTypeBase, TimestampSchema):
-
     id: int = Field()
 
     class Config:

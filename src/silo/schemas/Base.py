@@ -11,5 +11,4 @@ class TimestampSchema(BaseModel):
 
 
 class BaseSchema(BaseModel):
-
     model_config = ConfigDict(from_attributes=True)

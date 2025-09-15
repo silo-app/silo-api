@@ -3,13 +3,11 @@ from pydantic import BaseModel, Field
 
 
 class PoolBase(BaseModel):
-
     name: str = Field()
     description: str = Field()
 
 
 class PoolCreate(PoolBase):
-
     class Config:
         json_schema_extra = {
             "example": {
@@ -20,7 +18,6 @@ class PoolCreate(PoolBase):
 
 
 class PoolRead(PoolBase, TimestampSchema):
-
     id: int = Field()
 
     class Config:

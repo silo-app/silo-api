@@ -3,12 +3,10 @@ from pydantic import BaseModel, Field
 
 
 class StorageTypeBase(BaseModel):
-
     name: str = Field()
 
 
 class StorageTypeCreate(StorageTypeBase):
-
     class Config:
         json_schema_extra = {
             "example": {
@@ -18,7 +16,6 @@ class StorageTypeCreate(StorageTypeBase):
 
 
 class StorageTypeRead(StorageTypeBase, TimestampSchema):
-
     id: int = Field()
 
     class Config:

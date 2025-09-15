@@ -3,14 +3,16 @@ from pydantic import BaseModel, Field
 
 from silo.schemas.Role import RoleRead
 
+
 class UserUpdate(BaseModel):
     full_name: str | None = None
     email: str | None = None
     is_active: bool = True
 
+
 class UserBase(UserUpdate):
     username: str
-    
+
 
 class UserCreate(UserBase):
     class Config:

@@ -3,14 +3,12 @@ from pydantic import BaseModel, Field
 
 
 class StorageFurnitureBase(BaseModel):
-
     name: str = Field()
     room_id: int = Field()
     storage_type_id: int = Field()
 
 
 class StorageFurnitureCreate(StorageFurnitureBase):
-
     class Config:
         json_schema_extra = {
             "example": {
@@ -22,7 +20,6 @@ class StorageFurnitureCreate(StorageFurnitureBase):
 
 
 class StorageFurnitureRead(StorageFurnitureBase, TimestampSchema):
-
     id: int = Field()
 
     class Config:
