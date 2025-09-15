@@ -19,7 +19,7 @@ class AppConfig(BaseSettings):
 
     first_admin_user: str | None = None
 
-    allowed_origins: list[HttpUrl] = ["http://localhost:3000"]
+    allowed_origins: list[HttpUrl] = ["http://localhost:5173"]
     allowed_paths_without_auth: list[str] = [
         "/openapi.json",
         "/redoc",
