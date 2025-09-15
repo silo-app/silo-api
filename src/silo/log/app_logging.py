@@ -7,7 +7,6 @@ from silo import config
 
 
 class CustomFormatter(Formatter):
-
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
     red = "\x1b[31;20m"
@@ -69,6 +68,7 @@ except ValueError as e:
 
 logger = getLogger("silo")
 
+
 def api_logger(message: str):
     caller = inspect.stack()[1][3]
-    logger.info("[%s] %s",  str(caller), message, stacklevel=2)
+    logger.info("[%s] %s", str(caller), message, stacklevel=2)
