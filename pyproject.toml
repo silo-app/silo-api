@@ -5,9 +5,11 @@ description = "System for Inventory and Logistics Optimization"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "aiofiles>=24.1.0",
     "asyncpg>=0.30.0",
     "fastapi>=0.116.1",
     "greenlet>=3.2.4",
+    "gunicorn>=23.0.0",
     "ldap3>=2.9.1",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",
@@ -23,6 +25,7 @@ requires = ["setuptools"]
 [dependency-groups]
 dev = [
     "black>=25.1.0",
+    "faker>=37.6.0",
 ]
 
 [tool.ruff.lint.per-file-ignores]

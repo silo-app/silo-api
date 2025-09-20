@@ -13,7 +13,6 @@ SILO is a warehouse software for monitoring parts and stocks of all kinds.
 - [Demo](#demo)
 - [Installation](#installation)
 - [Configuration options](#configuration-options)
-  - [Example configuration](#example-configuration)
 - [API documentation](#api-documentation)
 - [Development instance](#development-instance)
 - [License](#license)
@@ -33,33 +32,16 @@ SILO is a warehouse software for monitoring parts and stocks of all kinds.
 
 ## Installation
 
-```
-python3 -m pip install silo-api
-```
 
 ## Configuration options
 
-### Example configuration
-
-```json
-{
-    ...
-    "secret_key": "<YOUR_SECRET_KEY>"
-}
-```
-
 ## API documentation
 
-You can access the API documentation on `/docs`.
+You can access the API documentation on `/docs` or `/redoc`.
 
 ## Development instance
 
-```
-$ git clone https://github.com/silo-app/backend.git
-$ cd backend/
-$ uv sync
-$ uv run --env-file .env python3 -m uvicorn main:app --reload --app-dir src/silo
-```
+
 
 ## License
 
