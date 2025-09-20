@@ -22,6 +22,13 @@ from .Tag import TagBase, TagRead, TagCreate
 from .Comment import CommentBase, CommentRead, CommentCreate
 
 from .BatteryType import BatteryType
+from .Document import (
+    DocumentRead,
+    DocumentCreate,
+    DocumentUpdate,
+    DocumentMimeTypes,
+    DocumentType,
+)
 
 ItemRead.model_rebuild()
 TagRead.model_rebuild()

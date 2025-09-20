@@ -19,6 +19,9 @@ class AppConfig(BaseSettings):
 
     first_admin_user: str | None = None
 
+    document_upload_directory: str = f"{THIS_PARENT_DIR}/uploads"
+    document_max_file_size: int = 10485760  # bytes
+
     allowed_origins: list[HttpUrl] = ["http://localhost:5173"]
     allowed_paths_without_auth: list[str] = [
         "/openapi.json",

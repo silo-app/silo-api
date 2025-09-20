@@ -1,4 +1,5 @@
 src/silo/log/logs/*
+uploads/
 
 
 # Byte-compiled / optimized / DLL files
