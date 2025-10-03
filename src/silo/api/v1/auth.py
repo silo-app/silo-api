@@ -62,7 +62,7 @@ async def logout(response: Response):
     description="Get an access token using OAuth2 password flow",
     summary="Get an access token",
 )
-async def access_token(
+async def login(
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: AsyncSession = Depends(async_get_db),
@@ -83,7 +83,7 @@ async def access_token(
         raise HTTPException(status_code=503, detail=f"Error authenticating user: {e}")
     except UserNotFound:
         logger.info("The user %s does not exists in authenticator source", username)
-        raise HTTPException(status_code=401, detail="User does not exists")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     except BindNotAllowedError:
         logger.error("Not allowed to fetch user data for user %s?", username)
         raise HTTPException(status_code=401, detail="Not allowed to fetch user data")
@@ -118,7 +118,7 @@ async def access_token(
         httponly=True,
         secure=True,
         samesite="strict",
-        max_age=config.refresh_token_expire_days * 24 * 3600,
+        max_age=config.jwt_refresh_token_expire_days * 24 * 3600,
     )
 
     return {"access_token": access_token, "token_type": "bearer"}

@@ -32,6 +32,8 @@ class AppConfig(BaseSettings):
         "/api/version",
         "/api/v1/auth/login",
         "/api/auth/login",
+        "/api/v1/auth/refresh",
+        "/api/auth/refresh",
     ]
 
     # postgresql+asyncpg://<db_username>:<db_secret>@<db_host>:<db_port>/<db_name>
@@ -66,10 +68,10 @@ class AppConfig(BaseSettings):
     ldap_bind_dn: str | None = None
     ldap_bind_pw: str | None = None
 
-    access_token_expire_minutes: int = 60
-    refresh_token_expire_days: int = 7
+    jwt_access_token_expire_minutes: int = 60
+    jwt_refresh_token_expire_days: int = 7
     jwt_algorithm: str = "HS256"
-    secret_key: SecretStr
+    jwt_secret_key: SecretStr
 
     model_config = SettingsConfigDict(
         env_file=".env",

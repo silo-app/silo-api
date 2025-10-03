@@ -12,21 +12,26 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 def create_access_token(sub: str) -> str:
     payload = {
         "sub": sub,
+        "type": "access",
         "exp": datetime.now(timezone.utc)
-        + timedelta(minutes=config.access_token_expire_minutes),
+        + timedelta(minutes=config.jwt_access_token_expire_minutes),
         "iat": datetime.now(timezone.utc),
     }
-    return jwt.encode(payload, str(config.secret_key), algorithm=config.jwt_algorithm)
+    return jwt.encode(
+        payload, str(config.jwt_secret_key), algorithm=config.jwt_algorithm
+    )
 
 
 def decode_token(token: str) -> dict:
-    return jwt.decode(token, str(config.secret_key), algorithms=[config.jwt_algorithm])
+    return jwt.decode(
+        token, str(config.jwt_secret_key), algorithms=[config.jwt_algorithm]
+    )
 
 
 async def verify_token(token: str) -> dict:
     try:
         payload = jwt.decode(
-            token, str(config.secret_key), algorithms=[config.jwt_algorithm]
+            token, str(config.jwt_secret_key), algorithms=[config.jwt_algorithm]
         )
         user_id: str = payload.get("sub")
         if not user_id:
@@ -48,8 +53,11 @@ async def verify_token(token: str) -> dict:
 def create_refresh_token(sub: str) -> str:
     payload = {
         "sub": sub,
+        "type": "refresh",
         "exp": datetime.now(timezone.utc)
-        + timedelta(days=config.refresh_token_expire_days),
+        + timedelta(days=config.jwt_refresh_token_expire_days),
         "iat": datetime.now(timezone.utc),
     }
-    return jwt.encode(payload, str(config.secret_key), algorithm=config.jwt_algorithm)
+    return jwt.encode(
+        payload, str(config.jwt_secret_key), algorithm=config.jwt_algorithm
+    )
