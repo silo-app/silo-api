@@ -1,5 +1,6 @@
 src/silo/log/logs/*
 uploads/
+.env.development
 
 
 # Byte-compiled / optimized / DLL files
