@@ -23,18 +23,6 @@ class AppConfig(BaseSettings):
     document_max_file_size: int = 10485760  # bytes
 
     allowed_origins: list[HttpUrl] = ["http://localhost:5173"]
-    allowed_paths_without_auth: list[str] = [
-        "/openapi.json",
-        "/redoc",
-        "/docs",
-        "/static/favicon.png",
-        "/static/logo.png",
-        "/api/version",
-        "/api/v1/auth/login",
-        "/api/auth/login",
-        "/api/v1/auth/refresh",
-        "/api/auth/refresh",
-    ]
 
     # postgresql+asyncpg://<db_username>:<db_secret>@<db_host>:<db_port>/<db_name>
     postgres_database_uri: PostgresDsn = (

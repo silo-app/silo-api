@@ -92,7 +92,10 @@ async def login(
         raise HTTPException(status_code=401, detail="Not allowed to fetch user data")
     except AuthTimeoutError as e:
         logger.error("Timeout error authenticating user %s: %s", username, e)
-        raise HTTPException(status_code=503, detail="Timeout error")
+        raise HTTPException(
+            status_code=503,
+            detail="Service unavailable. Please contact your system administrator.",
+        )
     except BindError as e:
         logger.error("Error binding user %s: %s", username, e)
         raise HTTPException(status_code=401, detail=f"Error binding user: {e}")
